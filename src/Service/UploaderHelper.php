@@ -31,7 +31,7 @@ class UploaderHelper
 
     public function uploadImage(UploadedFile $uploadedFile): string
     {
-        $destination = $this->uploadsPath . '/images';
+        $destination = $this->uploadsPath . '/media_entreprise';
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         $newFilename = Urlizer::urlize($originalFilename) . '-' . uniqid() . '.' . $uploadedFile->guessExtension();
         $uploadedFile->move(

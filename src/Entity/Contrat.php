@@ -97,7 +97,7 @@ class Contrat
     public function __construct()
     {
         $this->factures = new ArrayCollection();
-        $this->etat = "actif";
+        $this->etat = "pas_actif";
         $this->dateCreation = new \DateTime();
     }
 

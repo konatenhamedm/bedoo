@@ -36,6 +36,45 @@ class FactureRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function getFactureLocataire($locataire)
+    {
+        return $this->createQueryBuilder('f')
+            ->innerJoin('f.contrat', 'c')
+            ->innerJoin('c.locataire', 'l')
+            ->andWhere('l.code = :val')
+            ->setParameter('val', $locataire)
+            ->getQuery()
+            ->getResult();
+    }
+    public function getFactureProprietaire($proprietaire)
+    {
+        return $this->createQueryBuilder('f')
+            ->innerJoin('f.contrat', 'c')
+            ->innerJoin('c.proprietaire', 'p')
+            ->andWhere('p.code = :val')
+            ->setParameter('val', $proprietaire)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getFacturePro($userId, $etat)
+    {
+        $sql = $this->createQueryBuilder('f')
+            ->innerJoin('f.contrat', 'c')
+            ->innerJoin('c.Appartement', 'a')
+            ->innerJoin('a.batis', 'b')
+            ->innerJoin('b.proprietaire', 'p')
+            ->andWhere('p.code = :val')
+            ->setParameter('val', $userId);
+
+        if ($etat != null) {
+            $sql->andWhere('f.statut = :etat')
+                ->setParameter('etat', $etat);
+        }
+        return $sql->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Facture[] Returns an array of Facture objects
     //     */

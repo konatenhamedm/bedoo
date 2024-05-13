@@ -18,8 +18,6 @@ class Batis
     #[ORM\Column(length: 255)]
     private ?string $libelle = null;
 
-    #[ORM\ManyToOne(inversedBy: 'batis')]
-    private ?Quartier $quartier = null;
 
     #[ORM\Column(length: 255)]
     private ?string $lot = null;
@@ -48,6 +46,12 @@ class Batis
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $code = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $quartier = null;
+
+    #[ORM\ManyToOne(inversedBy: 'batis')]
+    private ?Ville $ville = null;
+
     public function __construct()
     {
         $this->appartements = new ArrayCollection();
@@ -70,17 +74,6 @@ class Batis
         return $this;
     }
 
-    public function getQuartier(): ?Quartier
-    {
-        return $this->quartier;
-    }
-
-    public function setQuartier(?Quartier $quartier): static
-    {
-        $this->quartier = $quartier;
-
-        return $this;
-    }
 
     public function getLot(): ?string
     {
@@ -192,6 +185,30 @@ class Batis
     public function setCode(?string $code): static
     {
         $this->code = $code;
+
+        return $this;
+    }
+
+    public function getQuartier(): ?string
+    {
+        return $this->quartier;
+    }
+
+    public function setQuartier(string $quartier): static
+    {
+        $this->quartier = $quartier;
+
+        return $this;
+    }
+
+    public function getVille(): ?Ville
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?Ville $ville): static
+    {
+        $this->ville = $ville;
 
         return $this;
     }

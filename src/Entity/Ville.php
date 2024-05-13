@@ -27,9 +27,16 @@ class Ville
     #[ORM\OneToMany(targetEntity: Quartier::class, mappedBy: 'ville')]
     private Collection $quartiers;
 
+    /**
+     * @var Collection<int, Batis>
+     */
+    #[ORM\OneToMany(targetEntity: Batis::class, mappedBy: 'ville')]
+    private Collection $batis;
+
     public function __construct()
     {
         $this->quartiers = new ArrayCollection();
+        $this->batis = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,6 +92,36 @@ class Ville
             // set the owning side to null (unless already changed)
             if ($quartier->getVille() === $this) {
                 $quartier->setVille(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Batis>
+     */
+    public function getBatis(): Collection
+    {
+        return $this->batis;
+    }
+
+    public function addBati(Batis $bati): static
+    {
+        if (!$this->batis->contains($bati)) {
+            $this->batis->add($bati);
+            $bati->setVille($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBati(Batis $bati): static
+    {
+        if ($this->batis->removeElement($bati)) {
+            // set the owning side to null (unless already changed)
+            if ($bati->getVille() === $this) {
+                $bati->setVille(null);
             }
         }
 

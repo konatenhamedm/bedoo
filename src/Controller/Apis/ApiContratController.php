@@ -205,6 +205,7 @@ class ApiContratController extends ApiInterface
             if ($contrat) {
                 $contrat->setLocataire($locataireRepository->find($data->locataire));
                 $contrat->setDateValidation(new DateTime());
+                $contrat->setEtat('actif');
                 $contratRepository->add($contrat, true);
 
                 $appartement = $contrat->getAppartement();
@@ -382,6 +383,7 @@ class ApiContratController extends ApiInterface
 
 
                 $contrat->setMotif($data->motif);
+                $contrat->setEtat('resilier');
                 $contrat->setDateResiliation(new DateTime());
                 $contratRepository->add($contrat, true);
 

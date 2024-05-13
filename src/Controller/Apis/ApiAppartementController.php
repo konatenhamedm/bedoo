@@ -52,6 +52,7 @@ class ApiAppartementController extends ApiInterface
                 $dataAppartements[$i]['nombrePiece'] = $appart->getNombrePiece();
                 $dataAppartements[$i]['occupe'] = $appart->isOccupe();
                 $dataAppartements[$i]['loyer'] = $appart->getLoyer();
+                $dataAppartements[$i]['details'] = $appart->getDetails();
             }
             $response = $this->response($dataAppartements);
         } catch (\Exception $exception) {
@@ -63,7 +64,7 @@ class ApiAppartementController extends ApiInterface
         return $response;
     }
 
-    #[Route('/appartement/libre/{idProprietaire}', methods: ['GET'])]
+    #[Route('/appartement/libre/{UserId}', methods: ['GET'])]
     /**
      * Retourne la liste des appartements libre d'une proprio.
      * 
@@ -78,12 +79,12 @@ class ApiAppartementController extends ApiInterface
     )]
     #[OA\Tag(name: 'appartements')]
     //#[Security(name: 'Bearer')]
-    public function indexAppartementLibre(AppartementRepository $appartementRepository, $idProprietaire, ProprietaireRepository $proprietaireRepository): Response
+    public function indexAppartementLibre(AppartementRepository $appartementRepository, $UserId, ProprietaireRepository $proprietaireRepository): Response
     {
         try {
             $i = 0;
             $dataAppartements = [];
-            $appartements = $appartementRepository->getAllAppartSpare($proprietaireRepository->findOneBy(['code' => $idProprietaire]));
+            $appartements = $appartementRepository->getAllAppartSpare($proprietaireRepository->findOneBy(['code' => $UserId]));
 
             //dd($appartements);
             foreach ($appartements as $key => $appart) {

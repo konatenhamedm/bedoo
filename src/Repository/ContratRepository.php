@@ -37,6 +37,41 @@ class ContratRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function getContratAppartement($userId, $etat)
+    {
+        $sql = $this->createQueryBuilder('c')
+            ->innerJoin('c.Appartement', 'a')
+            ->innerJoin('a.batis', 'b')
+            ->innerJoin('b.proprietaire', 'p')
+            ->andWhere('p.code = :val')
+            ->setParameter('val', $userId);
+
+        if ($etat != null) {
+            $sql->andWhere('c.etat = :etat')
+                ->setParameter('etat', $etat);
+        }
+        return $sql->getQuery()
+            ->getResult();
+    }
+    public function getContratLocataire($userId, $etat)
+    {
+        $sql = $this->createQueryBuilder('c')
+            ->innerJoin('c.Appartement', 'a')
+            ->innerJoin('c.locataire', 'l')
+            ->innerJoin('a.batis', 'b')
+            ->innerJoin('b.proprietaire', 'p')
+            ->andWhere('l is not null')
+            ->andWhere('p.code = :val')
+            ->setParameter('val', $userId);
+
+        if ($etat != null) {
+            $sql->andWhere('c.etat = :etat')
+                ->setParameter('etat', $etat);
+        }
+        return $sql->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Contrat[] Returns an array of Contrat objects
     //     */

@@ -26,10 +26,10 @@ class ApiInterface extends AbstractController
     protected $security;
     protected $userInterface;
     protected  $hasher;
-    protected  $utils;
+    //protected  $utils;
     protected $em;
 
-    public function __construct(EntityManagerInterface $em,)
+    public function __construct(EntityManagerInterface $em)
     {
 
 

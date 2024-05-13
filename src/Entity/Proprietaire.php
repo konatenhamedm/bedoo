@@ -24,6 +24,19 @@ class Proprietaire
     #[ORM\Column(length: 255)]
     private ?string $prenoms = null;
 
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Fichier $photo = null;
+
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Fichier $verso = null;
+
+    #[ORM\ManyToOne(cascade: ["persist"], fetch: "EAGER")]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Fichier $recto = null;
+
+
     /**
      * @var Collection<int, Batis>
      */
@@ -36,6 +49,12 @@ class Proprietaire
     #[ORM\OneToMany(targetEntity: Quartier::class, mappedBy: 'proprietaire')]
     private Collection $quartiers;
 
+    #[ORM\Column(length: 255)]
+    private ?string $numero = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $etat = null;
+
     public function __construct()
     {
         $this->batis = new ArrayCollection();
@@ -45,6 +64,42 @@ class Proprietaire
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPhoto(): ?Fichier
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?Fichier $photo): static
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getVerso(): ?Fichier
+    {
+        return $this->verso;
+    }
+
+    public function setVerso(?Fichier $verso): static
+    {
+        $this->verso = $verso;
+
+        return $this;
+    }
+
+    public function getRecto(): ?Fichier
+    {
+        return $this->recto;
+    }
+
+    public function setRecto(?Fichier $recto): static
+    {
+        $this->recto = $recto;
+
+        return $this;
     }
 
     public function getCode(): ?string
@@ -139,6 +194,30 @@ class Proprietaire
                 $quartier->setProprietaire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNumero(): ?string
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(string $numero): static
+    {
+        $this->numero = $numero;
+
+        return $this;
+    }
+
+    public function getEtat(): ?string
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(string $etat): static
+    {
+        $this->etat = $etat;
 
         return $this;
     }

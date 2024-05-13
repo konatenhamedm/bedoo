@@ -16,8 +16,9 @@ use Symfony\Component\Serializer\Annotation\Groups as Group;
 #[ORM\Entity(repositoryClass: FichierRepository::class)]
 #[Table(name: 'param_fichier')]
 #[ORM\HasLifecycleCallbacks]
-class Fichier
+class Fichier implements \Serializable
 {
+
     const DEFAULT_MIME_TYPES = [
         'text/plain', 'application/octet-stream', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
@@ -41,7 +42,7 @@ class Fichier
     private ?string $alt = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Gedmo\Timestampable(on: 'create')]
+    //#[Gedmo\Timestampable(on: 'create')]
     private ?\DateTimeInterface $dateCreation = null;
 
     #[ORM\Column(length: 5, nullable: true)]
@@ -53,6 +54,18 @@ class Fichier
 
 
     private ?string $verifieIfeditEmployeDocument = null;
+
+    public function serialize()
+    {
+        // return serialize([/* Toutes les propriétés de la classe sauf file */$this->id, $this->url, $this->size etc...]);
+        return serialize([$this->id, $this->url, $this->size, $this->alt, $this->dateCreation, $this->path]);
+    }
+
+    public function unserialize(string $data)
+    {
+        //[/* Toutes les propriétés de la classe sauf $this->file */$this->id, $this->url, $this->size etc..] = unserialize($data);
+        [$this->id, $this->url, $this->size, $this->alt, $this->dateCreation, $this->path] = unserialize($data);
+    }
 
     /**
      * @return string|null
@@ -91,11 +104,13 @@ class Fichier
     public function __construct()
     {
         //$this->path = "media_entreprise";
+        $this->dateCreation = new \DateTime();
     }
 
     // On modifie le setter de File, pour prendre en compte l'upload d'un fichier lorsqu'il en existe déjà un autre
+
     /**
-     * @param UploadedFile $file
+     * @param UploadedFile|null $file
      */
     public function setFile(UploadedFile $file = null)
     {

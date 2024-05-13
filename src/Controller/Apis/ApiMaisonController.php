@@ -8,6 +8,7 @@ use App\Entity\Appartement;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Entity\Batis;
 use App\Entity\Quartier;
+use App\Entity\Ville;
 use App\Repository\AppartementRepository;
 use App\Repository\BatisRepository;
 use App\Repository\ContratRepository;
@@ -15,6 +16,7 @@ use App\Repository\LocataireRepository;
 use App\Repository\ProprietaireRepository;
 use App\Repository\QuartierRepository;
 use App\Repository\TypeMaisonRepository;
+use App\Repository\VilleRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
@@ -28,7 +30,7 @@ class ApiMaisonController extends ApiInterface
 {
 
 
-    #[Route('/liste/batis/proprietaire/{idProprietaire}', methods: ['GET'])]
+    #[Route('/liste/batis/proprietaire/{UserId}', methods: ['GET'])]
     /**
      * Retourne la liste des maison du proprietaire.
      * 
@@ -43,7 +45,7 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     //#[Security(name: 'Bearer')]
-    public function index(BatisRepository $batisRepository, $idProprietaire, ProprietaireRepository $proprietaireRepository): Response
+    public function index(BatisRepository $batisRepository, $UserId, ProprietaireRepository $proprietaireRepository): Response
     {
         try {
 
@@ -52,13 +54,18 @@ class ApiMaisonController extends ApiInterface
             $i = 0;
             $j = 0;
 
-            $batis = $batisRepository->findBy(['proprietaire' => $proprietaireRepository->findOneBy(['code' => $idProprietaire])]);
+            $batis = $batisRepository->findBy(['proprietaire' => $proprietaireRepository->findOneBy(['code' => $UserId])]);
 
             foreach ($batis as $key => $batis) {
                 $dataBatis[$i]['id'] = $batis->getId();
                 $dataBatis[$i]['libelle'] = $batis->getLibelle();
-                $dataBatis[$i]['quartier'] = $batis->getQuartier()->getLibelle();
-                $dataBatis[$i]['ville'] = $batis->getQuartier()->getVille()->getLibelle();
+                $dataBatis[$i]['quartier'] = $batis->getQuartier();
+                $dataBatis[$i]['ville'] = $batis->getVille()->getLibelle();
+                $dataBatis[$i]['adresseMaison'] = $batis->getAdresseMaison();
+                $dataBatis[$i]['typeMaison'] = $batis->getTypeMaison()->getLibelle();
+                $dataBatis[$i]['titreFoncier'] = $batis->getTitreFoncier();
+                $dataBatis[$i]['ilot'] = $batis->getIlot();
+                $dataBatis[$i]['lot'] = $batis->getLot();
 
                 /* foreach ($batis->getAppartements() as $key => $appart) {
                     $dataBatis[$i]['id'] = $batis->getId();
@@ -75,7 +82,7 @@ class ApiMaisonController extends ApiInterface
         // On envoie la réponse
         return $response;
     }
-    #[Route('/liste/batis/proprietaire/{idLocataire}', methods: ['GET'])]
+    #[Route('/liste/batis/locataire/{UserId}', methods: ['GET'])]
     /**
      * Retourne la liste des maison du locataire.
      * 
@@ -90,20 +97,20 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     //#[Security(name: 'Bearer')]
-    public function indexLocataire(ContratRepository $contratRepository, $idLocataire, LocataireRepository $locataireRepository): Response
+    public function indexLocataire(ContratRepository $contratRepository, $UserId, LocataireRepository $locataireRepository): Response
     {
         try {
 
             $dataBatis = [];
             $i = 0;
-            $batis = $contratRepository->findBy(['locataire' => $locataireRepository->findOneBy(['code' => $idLocataire])]);
+            $batis = $contratRepository->findBy(['locataire' => $locataireRepository->findOneBy(['code' => $UserId])]);
 
             foreach ($batis as $key => $batis) {
                 $dataBatis[$i]['idContrat'] = $batis->getId();
                 $dataBatis[$i]['idBatis'] = $batis->getAppartement()->getBatis()->getId();
                 $dataBatis[$i]['libelle'] = $batis->getAppartement()->getBatis()->getLibelle();
-                $dataBatis[$i]['quartier'] = $batis->getAppartement()->getBatis()->getQuartier()->getLibelle();
-                $dataBatis[$i]['ville'] = $batis->getAppartement()->getBatis()->getQuartier()->getVille()->getLibelle();
+                $dataBatis[$i]['quartier'] = $batis->getAppartement()->getBatis()->getQuartier();
+                $dataBatis[$i]['ville'] = $batis->getAppartement()->getBatis()->getVille()->getLibelle();
 
                 /* foreach ($batis->getAppartements() as $key => $appart) {
                     $dataBatis[$i]['id'] = $batis->getId();
@@ -179,7 +186,8 @@ class ApiMaisonController extends ApiInterface
                 new OA\Property(property: 'titreFoncier', type: 'string'),
                 new OA\Property(property: 'ilot', type: 'string'),
                 new OA\Property(property: 'lot', type: 'string'),
-                new OA\Property(property: 'quartier', type: 'integer'),
+                new OA\Property(property: 'quartier', type: 'string'),
+                new OA\Property(property: 'ville', type: 'integer'),
                 new OA\Property(property: 'typeMaison', type: 'integer'),
                 new OA\Property(property: 'adresseMaison', type: 'string'),
             ],
@@ -190,7 +198,7 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     //#[Security(name: 'Bearer')]
-    public function create(Request $request, BatisRepository $batisRepository, ProprietaireRepository $proprietaireRepository, QuartierRepository $quartierRepository, TypeMaisonRepository $typeMaisonRepository): Response
+    public function create(Request $request, BatisRepository $batisRepository, ProprietaireRepository $proprietaireRepository, VilleRepository $villeRepository, TypeMaisonRepository $typeMaisonRepository): Response
     {
         try {
             $data = json_decode($request->getContent());
@@ -203,7 +211,8 @@ class ApiMaisonController extends ApiInterface
                 $batis->setTitreFoncier($data->titreFoncier);
                 $batis->setIlot($data->ilot);
                 $batis->setLot($data->lot);
-                $batis->setQuartier($quartierRepository->find($data->quartier));
+                $batis->setQuartier($data->quartier);
+                $batis->setVille($villeRepository->find($data->ville));
                 $batis->setTypeMaison($typeMaisonRepository->find($data->typeMaison));
                 $batis->setAdresseMaison($data->adresseMaison);
 
@@ -247,7 +256,8 @@ class ApiMaisonController extends ApiInterface
                 new OA\Property(property: 'titreFoncier', type: 'string'),
                 new OA\Property(property: 'ilot', type: 'string'),
                 new OA\Property(property: 'lot', type: 'string'),
-                new OA\Property(property: 'quartier', type: 'integer'),
+                new OA\Property(property: 'quartier', type: 'string'),
+                new OA\Property(property: 'ville', type: 'integer'),
                 new OA\Property(property: 'typeMaison', type: 'integer'),
                 new OA\Property(property: 'adresseMaison', type: 'string'),
                 //new OA\Property(property: 'appartements', type: 'array'),
@@ -261,7 +271,7 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     //#[Security(name: 'Bearer')]
-    public function createSeconde(Request $request, BatisRepository $batisRepository, AppartementRepository $appartementRepository, ProprietaireRepository $proprietaireRepository, QuartierRepository $quartierRepository, TypeMaisonRepository $typeMaisonRepository): Response
+    public function createSeconde(Request $request, BatisRepository $batisRepository, ProprietaireRepository $proprietaireRepository, AppartementRepository $appartementRepository, ProprietaireRepository $villeRepository, VilleRepository $quartierRepository, TypeMaisonRepository $typeMaisonRepository): Response
     {
         try {
             $data = json_decode($request->getContent());
@@ -272,7 +282,8 @@ class ApiMaisonController extends ApiInterface
             $batis->setTitreFoncier($data->titreFoncier);
             $batis->setIlot($data->ilot);
             $batis->setLot($data->lot);
-            $batis->setQuartier($quartierRepository->find($data->quartier));
+            $batis->setQuartier($data->quartier);
+            $batis->setVille($villeRepository->find($data->ville));
             $batis->setTypeMaison($typeMaisonRepository->find($data->typeMaison));
             $batis->setAdresseMaison($data->adresseMaison);
 
@@ -337,7 +348,7 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     // #[Security(name: 'Bearer')]
-    public function update(Request $request, Batis $batis, BatisRepository $batisRepository, ProprietaireRepository $proprietaireRepository, QuartierRepository $quartierRepository, TypeMaisonRepository $typeMaisonRepository): Response
+    public function update(Request $request, Batis $batis, BatisRepository $batisRepository, ProprietaireRepository $proprietaireRepository, VilleRepository $villeRepository, TypeMaisonRepository $typeMaisonRepository): Response
     {
         try {
             $data = json_decode($request->getContent());
@@ -350,8 +361,9 @@ class ApiMaisonController extends ApiInterface
                 $batis->setTitreFoncier($data->titreFoncier);
                 $batis->setIlot($data->ilot);
                 $batis->setLot($data->lot);
-                $batis->setQuartier($quartierRepository->find($data->quartier));
+                $batis->setQuartier($data->quartier);
                 $batis->setTypeMaison($typeMaisonRepository->find($data->typeMaison));
+                $batis->setVille($villeRepository->find($data->ville));
                 $batis->setAdresseMaison($data->adresseMaison);
 
                 // On sauvegarde en base

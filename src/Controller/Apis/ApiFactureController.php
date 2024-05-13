@@ -61,6 +61,88 @@ class ApiFactureController extends ApiInterface
         // On envoie la réponse
         return $response;
     }
+    #[Route('/facture/locataire/{userId}', methods: ['GET'])]
+    /**
+     * Retourne la liste des factures d'un locataire(payées et non payées).
+     * 
+     */
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Facture::class, groups: ['full']))
+        )
+    )]
+    #[OA\Tag(name: 'factures')]
+    // #[Security(name: 'Bearer')]
+    public function indexLocataire(FactureRepository $factureRepository, $userId): Response
+    {
+        try {
+            $dataFactures = [];
+            $i = 0;
+
+
+            $factures = $factureRepository->getFactureLocataire($userId);
+
+            foreach ($factures as $key => $facture) {
+                $dataFactures[$i]['id'] = $facture->getId();
+                $dataFactures[$i]['libelle'] = $facture->getLibelleFacture();
+                $dataFactures[$i]['paiementPartiel'] = $facture->getContrat()->isPaiementPartiel();
+                $dataFactures[$i]['montant'] = $facture->getMontant();
+                $dataFactures[$i]['dateLimite'] = $facture->getDateLimitePaiment();
+                $dataFactures[$i]['etat'] = $facture->getStatut();
+            }
+            $response = $this->response($factures);
+        } catch (\Exception $exception) {
+            $this->setMessage("");
+            $response = $this->response(null);
+        }
+
+        // On envoie la réponse
+        return $response;
+    }
+    #[Route('/facture/proprietaire/{userId}', methods: ['GET'])]
+    /**
+     * Retourne la liste des factures d'un proprietaire(payées et non payées).
+     * 
+     */
+    #[OA\Response(
+        response: 200,
+        description: 'Returns the rewards of an user',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Facture::class, groups: ['full']))
+        )
+    )]
+    #[OA\Tag(name: 'factures')]
+    // #[Security(name: 'Bearer')]
+    public function indexProprietaire(FactureRepository $factureRepository, $userId): Response
+    {
+        try {
+            $dataFactures = [];
+            $i = 0;
+
+
+            $factures = $factureRepository->getFactureProprietaire($userId);
+
+            foreach ($factures as $key => $facture) {
+                $dataFactures[$i]['id'] = $facture->getId();
+                $dataFactures[$i]['libelle'] = $facture->getLibelleFacture();
+                $dataFactures[$i]['paiementPartiel'] = $facture->getContrat()->isPaiementPartiel();
+                $dataFactures[$i]['montant'] = $facture->getMontant();
+                $dataFactures[$i]['dateLimite'] = $facture->getDateLimitePaiment();
+                $dataFactures[$i]['etat'] = $facture->getStatut();
+            }
+            $response = $this->response($factures);
+        } catch (\Exception $exception) {
+            $this->setMessage("");
+            $response = $this->response(null);
+        }
+
+        // On envoie la réponse
+        return $response;
+    }
 
 
 
@@ -82,7 +164,7 @@ class ApiFactureController extends ApiInterface
         schema: new OA\Schema(type: 'string')
     )]
     #[OA\Tag(name: 'factures')]
-    #[Security(name: 'Bearer')]
+    //#[Security(name: 'Bearer')]
     public function getOne(?Facture $facture)
     {
 
