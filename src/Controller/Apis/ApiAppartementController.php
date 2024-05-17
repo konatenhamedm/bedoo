@@ -79,12 +79,12 @@ class ApiAppartementController extends ApiInterface
     )]
     #[OA\Tag(name: 'appartements')]
     //#[Security(name: 'Bearer')]
-    public function indexAppartementLibre(AppartementRepository $appartementRepository, $UserId, ProprietaireRepository $proprietaireRepository): Response
+    public function indexAppartementLibre(AppartementRepository $appartementRepository, $userId, ProprietaireRepository $proprietaireRepository): Response
     {
         try {
             $i = 0;
             $dataAppartements = [];
-            $appartements = $appartementRepository->getAllAppartSpare($proprietaireRepository->findOneBy(['code' => $UserId]));
+            $appartements = $appartementRepository->getAllAppartSpare($proprietaireRepository->findOneBy(['code' => $userId]));
 
             //dd($appartements);
             foreach ($appartements as $key => $appart) {

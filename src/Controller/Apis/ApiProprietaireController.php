@@ -119,17 +119,17 @@ class ApiProprietaireController extends ApiInterface
     )]
     #[OA\Tag(name: 'proprietaires')]
     //#[Security(name: 'Bearer')]
-    public function getOne(ProprietaireRepository $proprietaireRepository, $UserId)
+    public function getOne(ProprietaireRepository $proprietaireRepository, $userId)
     {
 
         try {
 
-            $proprietaire = $proprietaireRepository->findOneBy(['code' => $UserId]);
+            $proprietaire = $proprietaireRepository->findOneBy(['code' => $userId]);
             if ($proprietaire) {
                 $response = $this->response([
                     'nom' => $proprietaire->getNom(),
                     'prenoms' => $proprietaire->getPrenoms(),
-                    'code' => $UserId,
+                    'code' => $userId,
                 ]);
             } else {
                 $this->setMessage('Cette ressource est inexistante');

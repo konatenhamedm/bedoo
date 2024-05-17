@@ -45,7 +45,7 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     //#[Security(name: 'Bearer')]
-    public function index(BatisRepository $batisRepository, $UserId, ProprietaireRepository $proprietaireRepository): Response
+    public function index(BatisRepository $batisRepository, $userId, ProprietaireRepository $proprietaireRepository): Response
     {
         try {
 
@@ -54,7 +54,7 @@ class ApiMaisonController extends ApiInterface
             $i = 0;
             $j = 0;
 
-            $batis = $batisRepository->findBy(['proprietaire' => $proprietaireRepository->findOneBy(['code' => $UserId])]);
+            $batis = $batisRepository->findBy(['proprietaire' => $proprietaireRepository->findOneBy(['code' => $userId])]);
 
             foreach ($batis as $key => $batis) {
                 $dataBatis[$i]['id'] = $batis->getId();
@@ -97,13 +97,13 @@ class ApiMaisonController extends ApiInterface
     )]
     #[OA\Tag(name: 'batis')]
     //#[Security(name: 'Bearer')]
-    public function indexLocataire(ContratRepository $contratRepository, $UserId, LocataireRepository $locataireRepository): Response
+    public function indexLocataire(ContratRepository $contratRepository, $userId, LocataireRepository $locataireRepository): Response
     {
         try {
 
             $dataBatis = [];
             $i = 0;
-            $batis = $contratRepository->findBy(['locataire' => $locataireRepository->findOneBy(['code' => $UserId])]);
+            $batis = $contratRepository->findBy(['locataire' => $locataireRepository->findOneBy(['code' => $userId])]);
 
             foreach ($batis as $key => $batis) {
                 $dataBatis[$i]['idContrat'] = $batis->getId();
