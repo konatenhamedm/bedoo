@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /* #[Route('/apis')] */
 
@@ -29,11 +30,15 @@ class ApiInterface extends AbstractController
     //protected  $utils;
     protected $em;
 
-    public function __construct(EntityManagerInterface $em)
+    protected $client;
+
+
+    public function __construct(EntityManagerInterface $em, HttpClientInterface $client)
     {
 
 
         //$this->utils = $utils;
+        $this->client = $client;
         $this->em = $em;
     }
 
@@ -143,5 +148,21 @@ class ApiInterface extends AbstractController
             'status' => $this->getStatusCode()
 
         ], 200);
+    }
+
+
+    public function sendNotification($data = [])
+    {
+        $body = [
+            "title" => $data['title'],
+            "body" => $data['body'],
+            "user_id" => $data['userID']
+        ];
+
+        $this->client->request(
+            'POST',
+            'https://api.freewan.store/auth-center/api/notifications/create',
+            $body
+        );
     }
 }

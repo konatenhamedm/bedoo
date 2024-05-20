@@ -94,10 +94,17 @@ class Contrat
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateResiliation = null;
 
+    #[ORM\Column]
+    private ?bool $firstPay = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $jourReceptionFacture = null;
+
     public function __construct()
     {
         $this->factures = new ArrayCollection();
         $this->etat = "pas_actif";
+        $this->firstPay = false;
         $this->dateCreation = new \DateTime();
     }
 
@@ -407,6 +414,30 @@ class Contrat
     public function setDateResiliation(\DateTimeInterface $dateResiliation): static
     {
         $this->dateResiliation = $dateResiliation;
+
+        return $this;
+    }
+
+    public function isFirstPay(): ?bool
+    {
+        return $this->firstPay;
+    }
+
+    public function setFirstPay(bool $firstPay): static
+    {
+        $this->firstPay = $firstPay;
+
+        return $this;
+    }
+
+    public function getJourReceptionFacture(): ?int
+    {
+        return $this->jourReceptionFacture;
+    }
+
+    public function setJourReceptionFacture(?int $jourReceptionFacture): static
+    {
+        $this->jourReceptionFacture = $jourReceptionFacture;
 
         return $this;
     }

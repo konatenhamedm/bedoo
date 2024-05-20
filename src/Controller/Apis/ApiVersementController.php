@@ -117,7 +117,7 @@ class ApiVersementController extends ApiInterface
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'montant', type: 'string'),
-                new OA\Property(property: 'responsablePaye', type: 'string', description: 'la valeur peut être proprietaire ou locataire'),
+                new OA\Property(property: 'responsablePaye', type: 'string', description: 'la valeur peut être proprietaire ou locataire ou systeme'),
                 new OA\Property(property: 'typePaiement', type: 'string', description: 'la valeur peut être partiel ou non_partiel'),
             ],
 

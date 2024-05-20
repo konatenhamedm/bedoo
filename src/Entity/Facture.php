@@ -49,6 +49,9 @@ class Facture
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateLimitePaiment = null;
 
+    #[ORM\ManyToOne(inversedBy: 'factures')]
+    private ?Mois $mois = null;
+
     public function __construct()
     {
         $this->versements = new ArrayCollection();
@@ -193,6 +196,18 @@ class Facture
     public function setDateLimitePaiment(?\DateTimeInterface $dateLimitePaiment): static
     {
         $this->dateLimitePaiment = $dateLimitePaiment;
+
+        return $this;
+    }
+
+    public function getMois(): ?Mois
+    {
+        return $this->mois;
+    }
+
+    public function setMois(?Mois $mois): static
+    {
+        $this->mois = $mois;
 
         return $this;
     }

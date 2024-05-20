@@ -212,6 +212,11 @@ class ApiContratController extends ApiInterface
                 $appartement->setOccupe(true);
 
                 $appartementRepository->add($appartement, true);
+                $this->sendNotification([
+                    'title' => 'Invitation locataire',
+                    'body' => "L'invation a bien été envoyée au locataire",
+                    'userId' => $data->locataire,
+                ]);
             } else {
                 $this->setMessage("Cette ressource est inexsitante");
                 $this->setStatusCode(300);
